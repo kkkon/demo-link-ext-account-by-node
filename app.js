@@ -110,12 +110,27 @@ var csrfStateGenerate = function(req, res, next) {
 
   res.locals.auth_param_state = csrfstate;
 
+  console.log('state pre :' + csrfstate);
   next();
+};
+
+var csrfStateCheck = function(req, res, next) {
+  var csrfstate = req.cookies.auth_param_state;
+  res.clearCookie('auth_param_state');
+
+  console.log('state post:' + csrfstate);
+  if ( req.query.state != csrfstate )
+  {
+    res.redirect('/error?result=csrf');
+  }
+  else
+  {
+    next();
+  }
 };
 
 app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
   var csrfstate = res.locals.auth_param_state;
-  console.log('state pre :' + csrfstate);
   if (csrfstate)
   {
     passport.authenticate('amazon', { state: csrfstate })(req, res, next);
@@ -126,27 +141,15 @@ app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '/fail' }),
+app.use('/amazon/callback', csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
   function(req, res) {
-    var csrfstate = req.cookies.auth_param_state;
-    res.clearCookie('auth_param_state');
-
-    console.log('state post:' + csrfstate);
-    if ( req.query.state != csrfstate )
-    {
-      res.redirect('/error?result=csrf');
-    }
-    else
-    {
-      res.redirect('/finish');
-    }
+    res.redirect('/finish');
   }
 );
 
 
 app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
   var csrfstate = res.locals.auth_param_state;
-  console.log('state pre :' + csrfstate);
   if (csrfstate)
   {
     passport.authenticate('google-openidconnect', { state: csrfstate })(req, res, next);
@@ -157,20 +160,9 @@ app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/google/callback', passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
+app.use('/google/callback', csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
   function(req, res) {
-    var csrfstate = req.cookies.auth_param_state;
-    res.clearCookie('auth_param_state');
-
-    console.log('state post:' + csrfstate);
-    if ( req.query.state != csrfstate )
-    {
-      res.redirect('/error?result=csrf');
-    }
-    else
-    {
-      res.redirect('/finish');
-    }
+    res.redirect('/finish');
   }
 );
 
