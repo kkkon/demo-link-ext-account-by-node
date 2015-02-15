@@ -21,11 +21,11 @@ passport.deserializeUser( function(obj, done) {
 
 var StrategyAmazon = require('passport-amazon').Strategy;
 passport.use(new StrategyAmazon({
-  clientID: config.amazon.client_id
-  , clientSecret: config.amazon.client_secret
-  , callbackURL: config.amazon.redirect
-  , scope: [ 'profile:user_id' ]
-  , skipUserProfile: false
+    clientID: config.amazon.client_id
+    , clientSecret: config.amazon.client_secret
+    , callbackURL: config.amazon.redirect
+    , scope: [ 'profile:user_id' ]
+    , skipUserProfile: false
   },
   function( accessToken, refreshToken, profile, done ) {
     process.nextTick( function() {
@@ -34,6 +34,19 @@ passport.use(new StrategyAmazon({
   }
 ));
 
+var StrategyGoogle = require('passport-google-openidconnect').Strategy;
+passport.use(new StrategyGoogle({
+    clientID: config.google.client_id
+    , clientSecret: config.google.client_secret
+    , callbackURL: config.google.redirect
+    , skipUserProfile: true
+  },
+  function( iss, sub, profile, accessToken, refreshToken, done ) {
+    process.nextTick( function() {
+      return done(null, profile);
+    });
+  }
+));
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -65,6 +78,16 @@ app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '
     res.redirect('/finish');
   }
 );
+
+
+app.use('/google/auth', passport.authenticate('google-openidconnect'));
+
+app.use('/google/callback', passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
+  function(req, res) {
+    res.redirect('/finish');
+  }
+);
+
 
 
 // catch 404 and forward to error handler
