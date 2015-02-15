@@ -3,6 +3,13 @@
   {
      "client_id":""
     ,"client_secret":""
-    ,"redirect":""
+    ,"redirect":"http://localhost:3000/amazon/callback"
+  }
+  ,
+  "google":
+  {
+     "client_id":""
+    ,"client_secret":""
+    ,"redirect":"http://localhost:3000/google/callback"
   }
 }
