@@ -12,4 +12,10 @@
     ,"client_secret":""
     ,"redirect":"http://localhost:3000/google/callback"
   }
+  ,
+  "db":
+  {
+     "url":"mongodb://localhost/demo-link-ext-account"
+    ,"collection_sessions":"sessions"
+  }
 }

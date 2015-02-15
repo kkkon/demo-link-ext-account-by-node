@@ -87,12 +87,20 @@ var users = require('./routes/users');
 var app = express();
 
 var expressSession = require('express-session');
+var mongoStore = require('connect-mongo')(expressSession);
+var mongoStoreOptions = {
+  url: config.db.url
+  , collections: config.db.collections_sessions || 'sessions'
+  , autoRemove: 'native' //default:'native' use TTL index
+  , ttl: 60*60 // default: 14*24*60*60 14 days
+};
 var expressSessionOptions = {
   secret: 'keyboard cat'
   , cookie: {}
   , resave: true
   , saveUninitialized: true
   //, name: 'connect.sid' // default: 'connect.sid'
+  , store: new mongoStore( mongoStoreOptions )
 };
 
 if ( 'production' === app.get('env') ) {
