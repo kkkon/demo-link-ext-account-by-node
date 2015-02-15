@@ -1,3 +1,4 @@
 *.js		text eol=lf
 *.ejs		text eol=lf
 *.json		text eol=lf
+bin/www		text eol=lf
