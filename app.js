@@ -29,7 +29,40 @@ passport.use(new StrategyAmazon({
   },
   function( accessToken, refreshToken, profile, done ) {
     process.nextTick( function() {
-      return done(null, profile);
+      var strategy = passport._strategy('amazon');
+      //console.log('amazon strategy');
+      //console.log(strategy);
+      strategy._oauth2.get('https://api.amazon.com/auth/O2/tokeninfo', accessToken, function(err,body,res) {
+        if (err) { return strategy.error(new InternalOAuthError('failed to fetch tokeninfo', err)); }
+
+        try {
+          var json = JSON.parse(body);
+          console.log('amazon tokeninfo');
+          console.log(json);
+
+          if ( json.iss != 'https://www.amazon.com' )
+          {
+            return strategy.error(new InternalOAuthError('validate error. issuer not match: ' + json.iss, err));
+          }
+          if ( json.aud != strategy._oauth2._clientId )
+          {
+            return strategy.error(new InternalOAuthError('validate error. audience not match: ' + json.aud, err));
+          }
+
+          var epoch_exp = json.iat + json.exp;
+          var epoch = Math.round(new Date()/1000);
+          //console.log( 'exp  =' + epoch_exp );
+          //console.log( 'epoch=' + epoch );
+          if ( epoch_exp < epoch )
+          {
+            return strategy.error(new InternalOAuthError('validate error. expired: ' + epoch_exp, err));
+          }
+
+          return done(null, profile);
+        } catch(e) {
+          done(e);
+        }
+      });
     });
   }
 ));
