@@ -86,6 +86,24 @@ var users = require('./routes/users');
 
 var app = express();
 
+var expressSession = require('express-session');
+var expressSessionOptions = {
+  secret: 'keyboard cat'
+  , cookie: {}
+  , resave: true
+  , saveUninitialized: true
+  //, name: 'connect.sid' // default: 'connect.sid'
+};
+
+if ( 'production' === app.get('env') ) {
+  //app.set('trust proxy', 1);
+
+  //expressSessionOptions.cookie.secure = true;
+
+  expressSessionOptions.secret = 'keyboard cat';
+}
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -96,6 +114,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(expressSession(expressSessionOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
