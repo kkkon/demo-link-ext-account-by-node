@@ -5,6 +5,36 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var config = require('config');
+var passport = require('passport');
+
+passport.serializeUser( function(user, done) {
+  console.log('passport.serializeUser');
+  console.log(user);
+  done(null, user);
+});
+
+passport.deserializeUser( function(obj, done) {
+  console.log('passport.deserializeUser');
+  done(null, obj);
+});
+
+var StrategyAmazon = require('passport-amazon').Strategy;
+passport.use(new StrategyAmazon({
+  clientID: config.amazon.client_id
+  , clientSecret: config.amazon.client_secret
+  , callbackURL: config.amazon.redirect
+  , scope: [ 'profile:user_id' ]
+  , skipUserProfile: false
+  },
+  function( accessToken, refreshToken, profile, done ) {
+    process.nextTick( function() {
+      return done(null, profile);
+    });
+  }
+));
+
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -20,10 +50,22 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+
+app.use('/amazon/auth', passport.authenticate('amazon'));
+
+app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '/fail' }),
+  function(req, res) {
+    res.redirect('/finish');
+  }
+);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
