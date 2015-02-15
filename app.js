@@ -125,17 +125,16 @@ app.use('/users', users);
 var csrfStateGenerate = function(req, res, next) {
   var crypto = require('crypto');
   var csrfstate = crypto.randomBytes(16).toString('base64');
-  res.cookie('auth_param_state', csrfstate);
-
-  res.locals.auth_param_state = csrfstate;
+  req.session.auth_param_state = csrfstate;
 
   console.log('state pre :' + csrfstate);
   next();
 };
 
 var csrfStateCheck = function(req, res, next) {
-  var csrfstate = req.cookies.auth_param_state;
-  res.clearCookie('auth_param_state');
+  var csrfstate = req.session.auth_param_state;
+  req.session.auth_param_state = null;
+  delete req.session.auth_param_state;
 
   console.log('state post:' + csrfstate);
   if ( req.query.state != csrfstate )
@@ -149,14 +148,14 @@ var csrfStateCheck = function(req, res, next) {
 };
 
 app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
-  var csrfstate = res.locals.auth_param_state;
+  var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
     passport.authenticate('amazon', { state: csrfstate })(req, res, next);
   }
   else
   {
-    res.redirect('/error?result=csrflocals');
+    res.redirect('/error?result=csrfsession');
   }
 });
 
@@ -168,14 +167,14 @@ app.use('/amazon/callback', csrfStateCheck, passport.authenticate('amazon', { fa
 
 
 app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
-  var csrfstate = res.locals.auth_param_state;
+  var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
     passport.authenticate('google-openidconnect', { state: csrfstate })(req, res, next);
   }
   else
   {
-    res.redirect('/error?result=csrflocals');
+    res.redirect('/error?result=csrfsession');
   }
 });
 
