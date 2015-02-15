@@ -103,12 +103,29 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
+app.use('/amazon/auth', function(req, res, next) {
+  var crypto = require('crypto');
+  var csrfstate = crypto.randomBytes(16).toString('base64');
+  res.cookie('auth_param_state', csrfstate);
+  console.log('state pre :' + csrfstate);
 
-app.use('/amazon/auth', passport.authenticate('amazon'));
+  passport.authenticate('amazon', { state: csrfstate })(req, res, next);
+});
 
 app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '/fail' }),
   function(req, res) {
-    res.redirect('/finish');
+    var csrfstate = req.cookies.auth_param_state;
+    res.clearCookie('auth_param_state');
+
+    console.log('state post:' + csrfstate);
+    if ( req.query.state != csrfstate )
+    {
+      res.redirect('/error?result=csrf');
+    }
+    else
+    {
+      res.redirect('/finish');
+    }
   }
 );
 
