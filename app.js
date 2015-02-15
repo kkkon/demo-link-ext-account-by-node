@@ -103,13 +103,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
-app.use('/amazon/auth', function(req, res, next) {
+var csrfStateGenerate = function(req, res, next) {
   var crypto = require('crypto');
   var csrfstate = crypto.randomBytes(16).toString('base64');
   res.cookie('auth_param_state', csrfstate);
-  console.log('state pre :' + csrfstate);
 
-  passport.authenticate('amazon', { state: csrfstate })(req, res, next);
+  res.locals.auth_param_state = csrfstate;
+
+  next();
+};
+
+app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
+  var csrfstate = res.locals.auth_param_state;
+  console.log('state pre :' + csrfstate);
+  if (csrfstate)
+  {
+    passport.authenticate('amazon', { state: csrfstate })(req, res, next);
+  }
+  else
+  {
+    res.redirect('/error?result=csrflocals');
+  }
 });
 
 app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '/fail' }),
@@ -130,13 +144,17 @@ app.use('/amazon/callback', passport.authenticate('amazon', { failureRedirect: '
 );
 
 
-app.use('/google/auth', function(req, res, next) {
-  var crypto = require('crypto');
-  var csrfstate = crypto.randomBytes(16).toString('base64');
-  res.cookie('auth_param_state', csrfstate);
+app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
+  var csrfstate = res.locals.auth_param_state;
   console.log('state pre :' + csrfstate);
-
-  passport.authenticate('google-openidconnect', { state: csrfstate })(req, res, next);
+  if (csrfstate)
+  {
+    passport.authenticate('google-openidconnect', { state: csrfstate })(req, res, next);
+  }
+  else
+  {
+    res.redirect('/error?result=csrflocals');
+  }
 });
 
 app.use('/google/callback', passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
