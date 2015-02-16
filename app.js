@@ -15,8 +15,33 @@ fs.readdirSync(__dirname + '/models').forEach( function (file) {
 });
 
 var config = require('config');
-var passport = require('passport');
 
+var mongoose = require('mongoose');
+var connectMongoDB = function() {
+  var env = process.env.NODE_ENV || 'development';
+  if (env === 'development') {
+    mongoose.connection.on('connected', function(err) {
+      if (err) { return console.log(err); }
+      return console.log('mongoose connected');
+    });
+  }
+
+  var options = {
+    server: {
+      socketOptions: { keepAlive: 1 }
+    }
+  };
+  mongoose.connect(config.db.url, options );
+};
+mongoose.connection.on('error', function(err) {
+  if (err) { return console.log(err); }
+  return console.log('mongoose error');
+});
+mongoose.connection.on('disconnected', connectMongoDB);
+connectMongoDB();
+
+
+var passport = require('passport');
 passport.serializeUser( function(user, done) {
   console.log('passport.serializeUser');
   console.log(user);
