@@ -250,15 +250,19 @@ if (app.get('env') === 'development') {
       });
       user.save( function(err) {
         if (err) { console.log(err); }
-        console.log('regist user');
+        console.log('registed user');
         next();
       });
     });
   }
   , function( req, res, next ) {
-    return res.redirect('/finish');
+    return res.redirect('/dev/registed');
   }
   );
+
+  app.use('/dev/registed', function(req, res, next) {
+    res.send('registed user');
+  });
 }
 
 
