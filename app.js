@@ -5,6 +5,15 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var fs = require('fs');
+// models
+fs.readdirSync(__dirname + '/models').forEach( function (file) {
+  if (~file.indexOf('.js'))
+  {
+    require(__dirname + '/models/' + file);
+  }
+});
+
 var config = require('config');
 var passport = require('passport');
 
