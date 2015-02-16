@@ -227,6 +227,41 @@ app.use('/google/callback', csrfStateCheck, passport.authenticate('google-openid
 );
 
 
+// development
+if (app.get('env') === 'development') {
+  app.use('/dev/regist', function(req, res, next) {
+    var appuid = String(req.query.appuid);
+    if (!appuid)
+    {
+      return res.redirect('error?result=appuid');
+    }
+
+    var mongoose = require('mongoose');
+    var User = mongoose.model('User');
+
+    User.findOne( { uid: appuid }, function(err, user) {
+      if (user)
+      {
+        console.log('found user');
+        return next();
+      }
+      user = new User({
+        uid: appuid
+      });
+      user.save( function(err) {
+        if (err) { console.log(err); }
+        console.log('regist user');
+        next();
+      });
+    });
+  }
+  , function( req, res, next ) {
+    return res.redirect('/finish');
+  }
+  );
+}
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
