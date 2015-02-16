@@ -14,8 +14,6 @@ db.once('open', function() {
     mongoose.disconnect();
   }, 3000 );
 });
-mongoose.disconnect();
-mongoose.connect(config.db.url);
 
 var User = mongoose.model('User');
 
@@ -26,6 +24,14 @@ function randomValueHex(len) {
 };
 
 describe('Users', function() {
+
+  before(function() {
+    mongoose.connect(config.db.url);
+  });
+
+  after(function() {
+    mongoose.disconnect();
+  });
 
   it('regist a new user', function(done) {
     var appuid = randomValueHex(8);
