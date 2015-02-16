@@ -21,5 +21,21 @@ var UserExtAccountSchema = new Schema({
 UserExtAccountSchema.index( { 'google.id': 1 }, { unique: true } );
 UserExtAccountSchema.index( { 'amazon.id': 1 }, { unique: true } );
 
+/*
+ static function
+
+ e.g) UserExtAccountSchema.load
+
+*/
+
+UserExtAccountSchema.statics = {
+
+  load: function(options, callback) {
+    options.select = options.select || 'uid';
+    this.findOne(options.criteria)
+      .select(options.select)
+      .exec(callback);
+  }
+};
 
 mongoose.model('UserExtAccount', UserExtAccountSchema);

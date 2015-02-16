@@ -53,4 +53,14 @@ describe('UserExtAccounts', function() {
     });
   });
 
+  it('load user', function(done) {
+    var options = {
+      criteria: { 'google.id': 1 }
+    };
+    UserExtAccount.load(options, function(err, data) {
+      if (err) { console.log(err); }
+      done();
+    });
+  });
+
 });
