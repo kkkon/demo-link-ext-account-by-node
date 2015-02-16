@@ -1,0 +1,7 @@
+{
+  "db":
+  {
+     "url":"mongodb://localhost/test_demo-link-ext-account"
+    ,"collection_sessions":"sessions"
+  }
+}
