@@ -45,4 +45,14 @@ describe('Users', function() {
     });
   });
 
+  it('load user', function(done) {
+    var options = {
+      criteria: { 'uid': 1 }
+    };
+    User.load(options, function(err, data) {
+      if (err) { console.log(err); }
+      done();
+    });
+  });
+
 });

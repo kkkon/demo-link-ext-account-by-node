@@ -7,4 +7,18 @@ var UserSchema = new Schema({
   // , 
 });
 
+/*
+ static function
+*/
+
+UserSchema.statics = {
+
+  load: function( options, callback ) {
+    options.select = options.select || 'uid';
+    this.findOne(options.criteria)
+      .select( options.select)
+      .exec(callback);
+  }
+};
+
 mongoose.model('User', UserSchema);
