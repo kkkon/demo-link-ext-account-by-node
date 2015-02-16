@@ -1,0 +1,42 @@
+var crypto = require('crypto');
+var mongoose = require('mongoose');
+var config = require('config');
+
+require('./../../models/user');
+
+var db = mongoose.connection;
+db.on('error', function(err) {
+  console.log('Mongoose connection error: ' + err);
+  mongoose.disconnect();
+});
+db.once('open', function() {
+  setTimeout( function() {
+    mongoose.disconnect();
+  }, 3000 );
+});
+mongoose.disconnect();
+mongoose.connect(config.db.url);
+
+var User = mongoose.model('User');
+
+function randomValueHex(len) {
+  return crypto.randomBytes(Math.ceil(len/2))
+    .toString('hex')
+    .slice(0,len);
+};
+
+describe('Users', function() {
+
+  it('regist a new user', function(done) {
+    var appuid = randomValueHex(8);
+
+    var user = new User({
+      uid: appuid
+    });
+    user.save( function(err) {
+      if (err) { console.log(err); }
+      done();
+    });
+  });
+
+});
