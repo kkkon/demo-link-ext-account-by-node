@@ -18,8 +18,8 @@ var UserExtAccountSchema = new Schema({
   }
 });
 
-UserExtAccountSchema.index( { 'google.id': 1 }, { unique: true } );
-UserExtAccountSchema.index( { 'amazon.id': 1 }, { unique: true } );
+UserExtAccountSchema.index( { 'google.id': 1 }, { unique: true, sparse: true } );
+UserExtAccountSchema.index( { 'amazon.id': 1 }, { unique: true, sparse: true } );
 
 /*
  static function
