@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var mongoose = require('mongoose');
 var config = require('config');
+var async = require('async');
 
 require('./../../models/userextaccount');
 
@@ -67,13 +68,24 @@ describe('UserExtAccounts', function() {
     var appuid = randomValueHex(8);
     var aid = randomValueHex(10);
 
-    var user = new UserExtAccount({
-      uid: appuid
-    });
-    user.save( function(err) {
+    async.series([
+      function(callback) {
+        var user = new UserExtAccount({
+          uid: appuid
+        });
+        user.save( function(err) {
+          if (err) { console.log(err); }
+          callback(null, 'done');
+        });
+      }
+    ]
+    , function(err, results) {
       if (err) { console.log(err); }
+      console.log(results);
+      done();
     });
 
+/*
     var data = {};
     var accessToken;
     var refreshToken;
@@ -90,6 +102,7 @@ describe('UserExtAccounts', function() {
         return done(err,data);
       });
     }
+*/
 /*
     {
       var amazon = {}
