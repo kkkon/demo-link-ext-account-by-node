@@ -137,6 +137,27 @@ describe('UserExtAccounts', function() {
           });
         }
       }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var amazon = {}
+          var amazonid = aid;
+          amazon.id = amazonid;
+          accessToken = randomValueHex(9);
+          refreshToken = randomValueHex(9);
+          if ( accessToken ) { amazon.accessToken = accessToken; }
+          if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+          data.amazon = amazon;
+          UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
     ]
     , function(err, results) {
       if (err) { console.log(err); }
@@ -144,36 +165,110 @@ describe('UserExtAccounts', function() {
       done();
     });
 
-/*
-    {
-      var amazon = {}
-      var amazonid = randomValueHex(8);
-      amazon.id = amazonid;
-      refreshToken = randomValueHex(9);
-      if ( accessToken ) { amazon.accessToken = accessToken; }
-      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
-      data.amazon = amazon;
-      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
-        if (err) { console.log(err); }
-        //console.log(data);
-        return done(err,data);
-      });
-    }
+  });
 
-    {
-      var amazon = {}
-      var amazonid = randomValueHex(8);
-      amazon.id = amazonid;
-      if ( accessToken ) { amazon.accessToken = accessToken; }
-      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
-      data.amazon = amazon;
-      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
-        if (err) { console.log(err); }
-        //console.log(data);
-        return done(err,data);
-      });
-    }
-*/
+
+  it('linkExtAccount google', function(done) {
+    var appuid = randomValueHex(8);
+    var aid = randomValueHex(10);
+
+    async.series([
+      function(callback) {
+        var user = new UserExtAccount({
+          uid: appuid
+        });
+        user.save( function(err) {
+          if (err) { console.log(err); }
+          callback(null, 'done');
+        });
+      }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var google = {}
+          var googleid = aid;
+          google.id = googleid;
+          if ( accessToken ) { google.accessToken = accessToken; }
+          if ( refreshToken ) { google.refreshToken = refreshToken; }
+          data.google = google;
+          UserExtAccount.linkExtAccount( appuid, 'google', data.google, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var google = {}
+          var googleid = aid;
+          google.id = googleid;
+          accessToken = randomValueHex(9);
+          if ( accessToken ) { google.accessToken = accessToken; }
+          if ( refreshToken ) { google.refreshToken = refreshToken; }
+          data.google = google;
+          UserExtAccount.linkExtAccount( appuid, 'google', data.google, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var google = {}
+          var googleid = aid;
+          google.id = googleid;
+          refreshToken = randomValueHex(9);
+          if ( accessToken ) { google.accessToken = accessToken; }
+          if ( refreshToken ) { google.refreshToken = refreshToken; }
+          data.google = google;
+          UserExtAccount.linkExtAccount( appuid, 'google', data.google, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var google = {}
+          var googleid = aid;
+          google.id = googleid;
+          accessToken = randomValueHex(9);
+          refreshToken = randomValueHex(9);
+          if ( accessToken ) { google.accessToken = accessToken; }
+          if ( refreshToken ) { google.refreshToken = refreshToken; }
+          data.google = google;
+          UserExtAccount.linkExtAccount( appuid, 'google', data.google, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
+    ]
+    , function(err, results) {
+      if (err) { console.log(err); }
+      console.log(results);
+      done();
+    });
+
   });
 
 });
