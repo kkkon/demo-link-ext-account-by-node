@@ -39,6 +39,14 @@ describe('UserExtAccounts', function() {
     mongoose.disconnect();
   });
 
+  beforeEach(function() {
+    if ( UserExtAccount.collection )
+    {
+      UserExtAccount.collection.remove({},{safe: true}, function(err) {
+        if (err) { console.log(err); }
+      });
+    }
+  });
 
   it('regist a new user', function(done) {
     var appuid = randomValueHex(8);

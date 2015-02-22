@@ -33,6 +33,15 @@ describe('Users', function() {
     mongoose.disconnect();
   });
 
+  beforeEach(function() {
+    if ( User.collection )
+    {
+      User.collection.remove({},{safe: true}, function(err) {
+        if (err) { console.log(err); }
+      });
+    }
+  });
+
   it('regist a new user', function(done) {
     var appuid = randomValueHex(8);
 
