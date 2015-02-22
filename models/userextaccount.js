@@ -36,6 +36,27 @@ UserExtAccountSchema.statics = {
       .select(options.select)
       .exec(callback);
   }
+
+  ,linkExtAccount: function( uid, name, data, callback ) {
+
+    var condition = {};
+    condition['uid'] = uid;
+
+    var update = {};
+    update['$set'] = {};
+    update['$set'][name] = data;
+
+    //console.log('linkExtAccount');
+    //console.log(update);
+
+    this.update( condition, update, function(err,numberAffected,raw) {
+      if (err) { console.log(err); }
+      console.log('update numberAffected='+numberAffected);
+      console.log(raw);
+      return callback(err,numberAffected);
+    });
+  }
+
 };
 
 mongoose.model('UserExtAccount', UserExtAccountSchema);
