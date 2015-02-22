@@ -63,4 +63,78 @@ describe('UserExtAccounts', function() {
     });
   });
 
+  it('linkExtAccount amazon', function(done) {
+    var appuid = randomValueHex(8);
+    var aid = randomValueHex(10);
+
+    var user = new UserExtAccount({
+      uid: appuid
+    });
+    user.save( function(err) {
+      if (err) { console.log(err); }
+    });
+
+    var data = {};
+    var accessToken;
+    var refreshToken;
+    {
+      var amazon = {}
+      var amazonid = randomValueHex(8);
+      amazon.id = amazonid;
+      if ( accessToken ) { amazon.accessToken = accessToken; }
+      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+      data.amazon = amazon;
+      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+        if (err) { console.log(err); }
+        //console.log(data);
+        return done(err,data);
+      });
+    }
+/*
+    {
+      var amazon = {}
+      var amazonid = randomValueHex(8);
+      amazon.id = amazonid;
+      accessToken = randomValueHex(9);
+      if ( accessToken ) { amazon.accessToken = accessToken; }
+      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+      data.amazon = amazon;
+      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+        if (err) { console.log(err); }
+        //console.log(data);
+        return done(err,data);
+      });
+    }
+
+    {
+      var amazon = {}
+      var amazonid = randomValueHex(8);
+      amazon.id = amazonid;
+      refreshToken = randomValueHex(9);
+      if ( accessToken ) { amazon.accessToken = accessToken; }
+      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+      data.amazon = amazon;
+      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+        if (err) { console.log(err); }
+        //console.log(data);
+        return done(err,data);
+      });
+    }
+
+    {
+      var amazon = {}
+      var amazonid = randomValueHex(8);
+      amazon.id = amazonid;
+      if ( accessToken ) { amazon.accessToken = accessToken; }
+      if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+      data.amazon = amazon;
+      UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+        if (err) { console.log(err); }
+        //console.log(data);
+        return done(err,data);
+      });
+    }
+*/
+  });
+
 });
