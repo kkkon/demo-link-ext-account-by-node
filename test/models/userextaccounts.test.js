@@ -117,6 +117,26 @@ describe('UserExtAccounts', function() {
           });
         }
       }
+      ,
+      function(callback) {
+        var data = {};
+        var accessToken;
+        var refreshToken;
+        {
+          var amazon = {}
+          var amazonid = aid;
+          amazon.id = amazonid;
+          refreshToken = randomValueHex(9);
+          if ( accessToken ) { amazon.accessToken = accessToken; }
+          if ( refreshToken ) { amazon.refreshToken = refreshToken; }
+          data.amazon = amazon;
+          UserExtAccount.linkExtAccount( appuid, 'amazon', data.amazon, function(err,numberAffected) {
+            if (err) { console.log(err); }
+            //console.log(data);
+            callback(null, 'done');
+          });
+        }
+      }
     ]
     , function(err, results) {
       if (err) { console.log(err); }
