@@ -164,9 +164,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
+var controlChecker = require('./controllers/checker');
 var csrfState = require('./controllers/csrfstate');
 
-app.use('/amazon/auth', csrfState.csrfStateGenerate, function(req, res, next) {
+app.use('/amazon/auth', controlChecker.checkSessionParam, csrfState.csrfStateGenerate, function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -178,14 +179,14 @@ app.use('/amazon/auth', csrfState.csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/amazon/callback', csrfState.csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
+app.use('/amazon/callback', controlChecker.checkSessionParam, csrfState.csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
   function(req, res) {
     res.redirect('/finish');
   }
 );
 
 
-app.use('/google/auth', csrfState.csrfStateGenerate, function(req, res, next) {
+app.use('/google/auth', controlChecker.checkSessionParam, csrfState.csrfStateGenerate, function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -197,7 +198,7 @@ app.use('/google/auth', csrfState.csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/google/callback', csrfState.csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
+app.use('/google/callback', controlChecker.checkSessionParam, csrfState.csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
   function(req, res) {
     res.redirect('/finish');
   }
