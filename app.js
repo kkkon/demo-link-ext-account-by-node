@@ -164,32 +164,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
-var csrfStateGenerate = function(req, res, next) {
-  var crypto = require('crypto');
-  var csrfstate = crypto.randomBytes(16).toString('base64');
-  req.session.auth_param_state = csrfstate;
+var csrfState = require('./controllers/csrfstate');
 
-  console.log('state pre :' + csrfstate);
-  next();
-};
-
-var csrfStateCheck = function(req, res, next) {
-  var csrfstate = req.session.auth_param_state;
-  req.session.auth_param_state = null;
-  delete req.session.auth_param_state;
-
-  console.log('state post:' + csrfstate);
-  if ( req.query.state != csrfstate )
-  {
-    res.redirect('/error?result=csrf');
-  }
-  else
-  {
-    next();
-  }
-};
-
-app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
+app.use('/amazon/auth', csrfState.csrfStateGenerate, function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -201,14 +178,14 @@ app.use('/amazon/auth', csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/amazon/callback', csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
+app.use('/amazon/callback', csrfState.csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
   function(req, res) {
     res.redirect('/finish');
   }
 );
 
 
-app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
+app.use('/google/auth', csrfState.csrfStateGenerate, function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -220,7 +197,7 @@ app.use('/google/auth', csrfStateGenerate, function(req, res, next) {
   }
 });
 
-app.use('/google/callback', csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
+app.use('/google/callback', csrfState.csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
   function(req, res) {
     res.redirect('/finish');
   }
