@@ -17,7 +17,11 @@ router.get('/checkCookie', controlChecker.checkCookie, function(req, res, next) 
 
 /* GET home page. */
 router.get('/index', controlChecker.checkCookie, controlChecker.checkSessionParam, function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  console.log( 'req.session' );
+  console.log( req.session );
+  console.log( 'req.user' );
+  console.log( req.user );
+  res.render('index', { title: 'Express', user: req.user });
 });
 
 module.exports = router;
