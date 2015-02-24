@@ -198,6 +198,23 @@ app.use('/amazon/callback', controlChecker.checkSessionParam, csrfState.csrfStat
   }
 );
 
+app.use('/amazon/revoke', function(req, res, next) {
+  if ( req.user )
+  {
+    if ( req.user.amazon && req.user.amazon.id )
+    {
+      var mongoose = require('mongoose');
+      var UserExtAccount = mongoose.model('UserExtAccount');
+
+      var amazon = {};
+      amazon.id = req.user.amazon.id;
+      UserExtAccount.revokeExtAccount( req.session.appuid, 'amazon', amazon, function(err,numberAffected) {
+        if (err) { console.log(err); }
+        res.redirect('/finish');
+      });
+    }
+  }
+});
 
 app.use('/google/auth', controlChecker.checkSessionParam, csrfState.csrfStateGenerate, function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
