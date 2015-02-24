@@ -40,7 +40,6 @@ mongoose.connection.on('error', function(err) {
 mongoose.connection.on('disconnected', connectMongoDB);
 connectMongoDB();
 
-
 var passport = require('passport');
 passport.serializeUser( function(user, done) {
   console.log('passport.serializeUser');
@@ -53,6 +52,8 @@ passport.deserializeUser( function(obj, done) {
   done(null, obj);
 });
 
+var passportCallback = require('./controllers/passportCallback');
+
 var StrategyAmazon = require('passport-amazon').Strategy;
 passport.use(new StrategyAmazon({
     clientID: config.amazon.client_id
@@ -60,8 +61,9 @@ passport.use(new StrategyAmazon({
     , callbackURL: config.amazon.redirect
     , scope: [ 'profile:user_id' ]
     , skipUserProfile: false
+    , passReqToCallback: true
   },
-  function( accessToken, refreshToken, profile, done ) {
+  function( req, accessToken, refreshToken, profile, done ) {
     process.nextTick( function() {
       var strategy = passport._strategy('amazon');
       //console.log('amazon strategy');
@@ -92,7 +94,7 @@ passport.use(new StrategyAmazon({
             return strategy.error(new InternalOAuthError('validate error. expired: ' + epoch_exp, err));
           }
 
-          return done(null, profile);
+          return passportCallback.invoke(req, profile, 'amazon', accessToken, refreshToken, done);
         } catch(e) {
           done(e);
         }
@@ -107,10 +109,11 @@ passport.use(new StrategyGoogle({
     , clientSecret: config.google.client_secret
     , callbackURL: config.google.redirect
     , skipUserProfile: true
+    , passReqToCallback: true
   },
-  function( iss, sub, profile, accessToken, refreshToken, done ) {
+  function( req, iss, sub, profile, accessToken, refreshToken, done ) {
     process.nextTick( function() {
-      return done(null, profile);
+      return passportCallback.invoke(req, profile, 'google', accessToken, refreshToken, done);
     });
   }
 ));
