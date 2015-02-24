@@ -199,19 +199,22 @@ app.use('/amazon/callback', controlChecker.checkSessionParam, csrfState.csrfStat
 );
 
 app.use('/amazon/revoke', function(req, res, next) {
-  if ( req.user )
+  if ( req.session.appuid )
   {
-    if ( req.user.amazon && req.user.amazon.id )
+    if ( req.user )
     {
-      var mongoose = require('mongoose');
-      var UserExtAccount = mongoose.model('UserExtAccount');
+      if ( req.user.amazon && req.user.amazon.id )
+      {
+        var mongoose = require('mongoose');
+        var UserExtAccount = mongoose.model('UserExtAccount');
 
-      var amazon = {};
-      amazon.id = req.user.amazon.id;
-      UserExtAccount.revokeExtAccount( req.session.appuid, 'amazon', amazon, function(err,numberAffected) {
-        if (err) { console.log(err); }
-        res.redirect('/finish');
-      });
+        var amazon = {};
+        amazon.id = req.user.amazon.id;
+        UserExtAccount.revokeExtAccount( req.session.appuid, 'amazon', amazon, function(err,numberAffected) {
+          if (err) { console.log(err); }
+          res.redirect('/finish');
+        });
+      }
     }
   }
 });
@@ -233,6 +236,58 @@ app.use('/google/callback', controlChecker.checkSessionParam, csrfState.csrfStat
     res.redirect('/finish');
   }
 );
+
+var googleRevoke = function(req, res, next) {
+  var passport = require('passport');
+  var mongoose = require('mongoose');
+  var UserExtAccount = mongoose.model('UserExtAccount');
+
+  var options = {
+    criteria: { 'uid': req.session.appuid }
+    , select: 'uid google'
+  };
+  UserExtAccount.load(options, function(err, data) {
+    if (err) { return done(err); }
+
+    console.log('google revoke: data');
+    console.log(data);
+
+    var strategy = req._passport.instance._strategy('google-openidconnect');
+    console.log('google strategy');
+    console.log(strategy);
+
+    strategy.revoke( { accessToken: data.google.accessToken }, function(err, body, res ) {
+      console.log('reovke');
+      console.log(body);
+      console.log(res);
+      if (err) { console.log(err); }
+
+      next();
+    });
+  });
+};
+
+app.use('/google/revoke', googleRevoke, function(req, res, next) {
+  if ( req.session.appuid )
+  {
+    if ( req.user )
+    {
+      if ( req.user.google && req.user.google.id )
+      {
+        var mongoose = require('mongoose');
+        var UserExtAccount = mongoose.model('UserExtAccount');
+
+        var google = {};
+        google.id = req.user.google.id;
+        UserExtAccount.revokeExtAccount( req.session.appuid, 'google', google, function(err,numberAffected) {
+          if (err) { console.log(err); }
+          res.redirect('/finish');
+        });
+      }
+    }
+  }
+});
+
 
 
 // development
