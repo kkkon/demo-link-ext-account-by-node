@@ -44,12 +44,22 @@ var passport = require('passport');
 passport.serializeUser( function(user, done) {
   console.log('passport.serializeUser');
   console.log(user);
-  done(null, user);
+  done(null, user.uid);
 });
 
-passport.deserializeUser( function(obj, done) {
+passport.deserializeUser( function(objId, done) {
   console.log('passport.deserializeUser');
-  done(null, obj);
+  console.log(objId);
+  //var mongoose = require('mongoose');
+  var UserExtAccount = mongoose.model('UserExtAccount');
+  var options = {
+    criteria: { uid: objId }
+    , select: "uid google.id amazon.id"
+  };
+  UserExtAccount.load(options, function(err, user) {
+    console.log(user);
+    done(null, user);
+  });
 });
 
 var passportCallback = require('./controllers/passportCallback');
