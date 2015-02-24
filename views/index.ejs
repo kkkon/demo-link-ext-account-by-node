@@ -18,5 +18,20 @@
     <a href="amazon/auth">Link with Amazon</a>
     </p>
 
+
+    <% if ( user ) { %>
+      <% if ( user.google.id ) { %>
+        <p>
+        <a href="google/revoke">Unlink from Google</a>
+        </p>
+      <% } %>
+
+      <% if ( user.amazon.id ) { %>
+        <p>
+        <a href="amazon/revoke">Unlink from Amazon</a>
+        </p>
+      <% } %>
+    <% } %>
+
   </body>
 </html>
