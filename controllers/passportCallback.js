@@ -87,9 +87,13 @@ var passportCallback = function( req, profile, provider, accessToken, refreshTok
     return link(req, profile, provider, accessToken, refreshToken, done);
   }
   else
-  if ( 'recover' === mode )
+  if ( 'recovery' === mode )
   {
     return recover(req, profile, provider, accessToken, refreshToken, done);
+  }
+  else
+  {
+    done(new Error('unknown mode: ' + mode));
   }
 };
 
