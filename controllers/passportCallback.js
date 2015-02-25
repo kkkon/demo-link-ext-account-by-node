@@ -76,7 +76,7 @@ var recover = function( req, profile, provider, accessToken, refreshToken, done 
     }
     else
     {
-      console.log('passportCallback.recover: doesn't found account. ' + provider + ' ' + profile.id);
+      console.log('passportCallback.recover: doesn\'t found account. ' + provider + ' ' + profile.id);
       return done(null);
     }
   });
