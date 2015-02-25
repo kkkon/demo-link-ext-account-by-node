@@ -9,14 +9,26 @@
     <p>Welcome to <%= title %></p>
 
     <!-- https://developers.google.com/+/branding-guidelines -->
-    <p>
-    <a href="google/auth">Link with Google</a>
-    </p>
+    <% if ( user && user.google && user.google.id ) { %>
+      <p>
+      <a href="google/auth">Rewrite with Google</a>
+      </p>
+    <% } else { %>
+      <p>
+      <a href="google/auth">Link with Google</a>
+      </p>
+    <% } %>
 
     <!-- http://login.amazon.com/button-guide -->
-    <p>
-    <a href="amazon/auth">Link with Amazon</a>
-    </p>
+    <% if ( user && user.amazon && user.amazon.id ) { %>
+      <p>
+      <a href="amazon/auth">Rewrite with Amazon</a>
+      </p>
+    <% } else { %>
+      <p>
+      <a href="amazon/auth">Link with Amazon</a>
+      </p>
+    <% } %>
 
 
     <% if ( user ) { %>
