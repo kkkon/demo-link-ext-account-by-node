@@ -3,7 +3,10 @@ var router = express.Router();
 
 var controlChecker = require('../controllers/checker');
 
-router.get('/', controlChecker.regenerateSession, controlChecker.checkEntryParam, function(req, res, next) {
+router.get('/'
+  , controlChecker.regenerateSession
+  , controlChecker.checkEntryParam
+  , function(req, res, next) {
   res.cookie('checkCookie', 1 );
 
   res.redirect('checkCookie');
@@ -11,12 +14,19 @@ router.get('/', controlChecker.regenerateSession, controlChecker.checkEntryParam
 });
 
 /* check cookie */
-router.get('/checkCookie', controlChecker.checkCookie, controlChecker.checkAccount, function(req, res, next) {
+router.get('/checkCookie'
+  , controlChecker.checkCookie
+  , controlChecker.checkAccount
+  , function(req, res, next) {
   res.redirect('index');
 });
 
 /* GET home page. */
-router.get('/index', controlChecker.checkCookie, controlChecker.checkSessionParam, function(req, res, next) {
+router.get('/index'
+  , controlChecker.checkCookie
+  , controlChecker.checkSessionParam
+  , controlChecker.checkModeChange
+  , function(req, res, next) {
   console.log( 'req.session' );
   console.log( req.session );
   console.log( 'req.user' );
