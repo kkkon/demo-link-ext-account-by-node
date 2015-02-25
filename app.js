@@ -43,6 +43,8 @@ connectMongoDB();
 var passport = require('./controllers/passport');
 
 var routes = require('./routes/index');
+var routesAmazon = require('./routes/amazon');
+var routesGoogle = require('./routes/google');
 
 var app = express();
 
@@ -88,74 +90,8 @@ app.use(passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-
-var controlChecker = require('./controllers/checker');
-var csrfState = require('./controllers/csrfstate');
-var actionRevoke = require('./controllers/actionRevoke');
-
-app.use('/amazon/auth'
-  , controlChecker.checkSessionParam
-  , csrfState.csrfStateGenerate
-  , function(req, res, next) {
-  var csrfstate = req.session.auth_param_state;
-  if (csrfstate)
-  {
-    passport.authenticate('amazon', { state: csrfstate })(req, res, next);
-  }
-  else
-  {
-    res.redirect('/error?result=csrfsession');
-  }
-});
-
-app.use('/amazon/callback'
-  , controlChecker.checkSessionParam
-  , csrfState.csrfStateCheck
-  , passport.authenticate('amazon', { failureRedirect: '/fail' })
-  , function(req, res) {
-    res.redirect('/finish');
-  }
-);
-
-app.use('/amazon/revoke'
-  , controlChecker.checkSessionParam
-  , actionRevoke.amazonRevoke
-  , function(req, res) {
-  res.redirect('/finish');
-});
-
-app.use('/google/auth'
-  , controlChecker.checkSessionParam
-  , csrfState.csrfStateGenerate
-  , function(req, res, next) {
-  var csrfstate = req.session.auth_param_state;
-  if (csrfstate)
-  {
-    passport.authenticate('google-openidconnect', { state: csrfstate })(req, res, next);
-  }
-  else
-  {
-    res.redirect('/error?result=csrfsession');
-  }
-});
-
-app.use('/google/callback'
-  , controlChecker.checkSessionParam
-  , csrfState.csrfStateCheck
-  , passport.authenticate('google-openidconnect', { failureRedirect: '/fail' })
-  , function(req, res) {
-    res.redirect('/finish');
-  }
-);
-
-app.use('/google/revoke'
-  , controlChecker.checkSessionParam
-  , actionRevoke.googleTokenRevoke
-  , actionRevoke.googleRevoke
-  , function(req, res) {
-
-  res.redirect('/finish');
-});
+app.use('/amazon', routesAmazon);
+app.use('/google', routesGoogle);
 
 
 
