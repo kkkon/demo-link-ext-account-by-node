@@ -11,7 +11,7 @@ router.get('/', controlChecker.checkEntryParam, function(req, res, next) {
 });
 
 /* check cookie */
-router.get('/checkCookie', controlChecker.checkCookie, function(req, res, next) {
+router.get('/checkCookie', controlChecker.checkCookie, controlChecker.checkAccount, function(req, res, next) {
   res.redirect('index');
 });
 

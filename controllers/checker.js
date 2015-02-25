@@ -77,7 +77,129 @@ var checkSessionParam = function(req, res, next) {
   return res.redirect('error?result=sess_mode');
 };
 
+
+var checkAccount = function(req, res, next) {
+  if ( !req.session.ext_account_mode ) {
+    return res.redirect('error?result=sess_mode');
+  }
+
+  var mode = req.session.ext_account_mode;
+
+  if ( 'link' === mode )
+  {
+    if ( !req.session.appuid ) {
+      return res.redirect('error?result=sess_appuid');
+    }
+
+    var mongoose = require('mongoose');
+    var User = mongoose.model('User');
+    var appuid = String(req.session.appuid);
+    User.findOne( { uid: appuid }, function(err, user) {
+      if (err) { console.log(err); }
+      if (!user)
+      {
+        return res.redirect('error?result=account_notfound');
+      }
+
+      {
+        req.logout();
+
+        var UserExtAccount = mongoose.model('UserExtAccount');
+        var options = {
+          criteria: { 'uid': req.session.appuid }
+          , select: 'uid amazon.id google.id'
+        };
+        UserExtAccount.load(options, function(err, data) {
+          if (err) { console.log(err); }
+
+          //console.log('load appuid='+req.session.appuid);
+          //console.log(data);
+
+          if(!data)
+          {
+            next();
+          }
+
+          console.log('req.logIn:');
+          console.log(data);
+          req.logIn( data, function(err) {
+            if (err) { console.log(err); }
+
+            //console.log( 'req.logIn req.session' );
+            //console.log( req.session );
+            //console.log( 'req.logIn req.user' );
+            //console.log( req.user );
+            //console.log( 'req.logIn req._passport.session' );
+            //console.log( req._passport.session );
+
+            next();
+          });
+        });
+      }
+    });
+  }
+  else
+  if ( 'recovery' === mode )
+  {
+    return next();
+  }
+  else
+  {
+    return res.redirect('error?result=sess_mode');
+  }
+};
+
+/*
+var regenerateSession = function(req, res, next) {
+  var mode = req.session.ext_account_mode;
+  var appuid = req.session.appuid;
+  console.log('req.sessionID regenerate before='+req.sessionID);
+  console.log('req._passport.session regenerate before='+req._passport.session);
+
+  req.session.regenerate( function(err) {
+    if (err) { console.log(err); }
+    req.logout();
+    console.log('req.sessionID regenerate after ='+req.sessionID);
+    console.log('req._passport.session regenerate after ='+req._passport.session);
+    req.session.appuid = appuid;
+    req.session.ext_account_mode = mode;
+
+    var UserExtAccount = mongoose.model('UserExtAccount');
+    var options = {
+      criteria: { 'uid': req.session.appuid }
+      , select: 'uid amazon.id google.id'
+    };
+    UserExtAccount.load(options, function(err, data) {
+      if (err) { console.log(err); }
+
+      //console.log('load appuid='+req.session.appuid);
+      //console.log(data);
+
+      if(!data)
+      {
+        next();
+      }
+
+      console.log('req.logIn:');
+      //console.log(data);
+      req.logIn( data, function(err) {
+        if (err) { console.log(err); }
+        console.log( 'req.logIn req.session' );
+        console.log( req.session );
+        console.log( 'req.logIn req.user' );
+        console.log( req.user );
+        console.log( 'req.logIn req._passport.session' );
+        console.log( req._passport.session );
+
+        next();
+      });
+    });
+  });
+};
+*/
+
 exports.checkEntryParam = checkEntryParam;
 exports.checkCookie = checkCookie;
 exports.checkSessionParam = checkSessionParam;
+exports.checkAccount = checkAccount;
 
