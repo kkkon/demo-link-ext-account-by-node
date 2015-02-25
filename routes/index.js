@@ -31,11 +31,38 @@ router.get('/index'
   console.log( req.session );
   console.log( 'req.user' );
   console.log( req.user );
-  res.render('index', { title: 'Express', user: req.user });
+
+  var mode = req.session.ext_account_mode;
+  if ( 'link' === mode )
+  {
+    res.render('index', { title: 'Express', user: req.user });
+  }
+  else
+  if ( 'recovery' === mode )
+  {
+    res.render('index_recovery', { title: 'Express', user: req.user });
+  }
+  else
+  {
+    res.redirect('/error?result=mode');
+  }
 });
 
 router.get('/finish', function(req, res, next) {
-  res.render('finish');
+  var mode = req.session.ext_account_mode;
+  if ( 'link' === mode )
+  {
+    res.render('finish');
+  }
+  else
+  if ( 'recovery' === mode )
+  {
+    res.render('finish_recovery');
+  }
+  else
+  {
+    res.redirect('/error?result=mode');
+  }
 });
 
 module.exports = router;
