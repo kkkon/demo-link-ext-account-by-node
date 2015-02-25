@@ -196,7 +196,7 @@ app.use('/amazon/callback', controlChecker.checkSessionParam, csrfState.csrfStat
   }
 );
 
-app.use('/amazon/revoke', function(req, res, next) {
+app.use('/amazon/revoke', controlChecker.checkSessionParam, function(req, res, next) {
   if ( req.session.appuid )
   {
     if ( req.user )
@@ -265,7 +265,7 @@ var googleRevoke = function(req, res, next) {
   });
 };
 
-app.use('/google/revoke', googleRevoke, function(req, res, next) {
+app.use('/google/revoke', controlChecker.checkSessionParam, googleRevoke, function(req, res, next) {
   if ( req.session.appuid )
   {
     if ( req.user )
