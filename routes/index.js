@@ -3,7 +3,7 @@ var router = express.Router();
 
 var controlChecker = require('../controllers/checker');
 
-router.get('/', controlChecker.checkEntryParam, function(req, res, next) {
+router.get('/', controlChecker.regenerateSession, controlChecker.checkEntryParam, function(req, res, next) {
   res.cookie('checkCookie', 1 );
 
   res.redirect('checkCookie');

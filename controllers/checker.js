@@ -149,55 +149,16 @@ var checkAccount = function(req, res, next) {
   }
 };
 
-/*
 var regenerateSession = function(req, res, next) {
-  var mode = req.session.ext_account_mode;
-  var appuid = req.session.appuid;
-  console.log('req.sessionID regenerate before='+req.sessionID);
-  console.log('req._passport.session regenerate before='+req._passport.session);
-
+  req.logout();
   req.session.regenerate( function(err) {
     if (err) { console.log(err); }
-    req.logout();
-    console.log('req.sessionID regenerate after ='+req.sessionID);
-    console.log('req._passport.session regenerate after ='+req._passport.session);
-    req.session.appuid = appuid;
-    req.session.ext_account_mode = mode;
-
-    var UserExtAccount = mongoose.model('UserExtAccount');
-    var options = {
-      criteria: { 'uid': req.session.appuid }
-      , select: 'uid amazon.id google.id'
-    };
-    UserExtAccount.load(options, function(err, data) {
-      if (err) { console.log(err); }
-
-      //console.log('load appuid='+req.session.appuid);
-      //console.log(data);
-
-      if(!data)
-      {
-        next();
-      }
-
-      console.log('req.logIn:');
-      //console.log(data);
-      req.logIn( data, function(err) {
-        if (err) { console.log(err); }
-        console.log( 'req.logIn req.session' );
-        console.log( req.session );
-        console.log( 'req.logIn req.user' );
-        console.log( req.user );
-        console.log( 'req.logIn req._passport.session' );
-        console.log( req._passport.session );
-
-        next();
-      });
-    });
+    next();
   });
 };
-*/
 
+
+exports.regenerateSession = regenerateSession;
 exports.checkEntryParam = checkEntryParam;
 exports.checkCookie = checkCookie;
 exports.checkSessionParam = checkSessionParam;
