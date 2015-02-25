@@ -24,4 +24,8 @@ router.get('/index', controlChecker.checkCookie, controlChecker.checkSessionPara
   res.render('index', { title: 'Express', user: req.user });
 });
 
+router.get('/finish', function(req, res, next) {
+  res.render('finish');
+});
+
 module.exports = router;
