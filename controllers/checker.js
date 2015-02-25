@@ -161,7 +161,7 @@ var checkModeChange = function(req, res, next) {
   var mode = req.session.ext_account_mode;
   if ( 'recovery' !== mode )
   {
-    next();
+    return next();
   }
 
   if ( req.user )
