@@ -157,10 +157,29 @@ var regenerateSession = function(req, res, next) {
   });
 };
 
+var checkModeChange = function(req, res, next) {
+  var mode = req.session.ext_account_mode;
+  if ( 'recovery' !== mode )
+  {
+    next();
+  }
+
+  if ( req.user )
+  {
+    if ( req.user.uid )
+    {
+      req.session.appuid = req.user.uid;
+      req.session.ext_account_mode = 'link';
+    }
+  }
+
+  next();
+};
 
 exports.regenerateSession = regenerateSession;
 exports.checkEntryParam = checkEntryParam;
 exports.checkCookie = checkCookie;
 exports.checkSessionParam = checkSessionParam;
 exports.checkAccount = checkAccount;
+exports.checkModeChange = checkModeChange;
 
