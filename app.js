@@ -92,7 +92,10 @@ app.use('/', routes);
 var controlChecker = require('./controllers/checker');
 var csrfState = require('./controllers/csrfstate');
 
-app.use('/amazon/auth', controlChecker.checkSessionParam, csrfState.csrfStateGenerate, function(req, res, next) {
+app.use('/amazon/auth'
+  , controlChecker.checkSessionParam
+  , csrfState.csrfStateGenerate
+  , function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -104,13 +107,18 @@ app.use('/amazon/auth', controlChecker.checkSessionParam, csrfState.csrfStateGen
   }
 });
 
-app.use('/amazon/callback', controlChecker.checkSessionParam, csrfState.csrfStateCheck, passport.authenticate('amazon', { failureRedirect: '/fail' }),
-  function(req, res) {
+app.use('/amazon/callback'
+  , controlChecker.checkSessionParam
+  , csrfState.csrfStateCheck
+  , passport.authenticate('amazon', { failureRedirect: '/fail' })
+  , function(req, res) {
     res.redirect('/finish');
   }
 );
 
-app.use('/amazon/revoke', controlChecker.checkSessionParam, function(req, res, next) {
+app.use('/amazon/revoke'
+  , controlChecker.checkSessionParam
+  , function(req, res) {
   if ( req.session.appuid )
   {
     if ( req.user )
@@ -131,7 +139,10 @@ app.use('/amazon/revoke', controlChecker.checkSessionParam, function(req, res, n
   }
 });
 
-app.use('/google/auth', controlChecker.checkSessionParam, csrfState.csrfStateGenerate, function(req, res, next) {
+app.use('/google/auth'
+  , controlChecker.checkSessionParam
+  , csrfState.csrfStateGenerate
+  , function(req, res, next) {
   var csrfstate = req.session.auth_param_state;
   if (csrfstate)
   {
@@ -143,8 +154,11 @@ app.use('/google/auth', controlChecker.checkSessionParam, csrfState.csrfStateGen
   }
 });
 
-app.use('/google/callback', controlChecker.checkSessionParam, csrfState.csrfStateCheck, passport.authenticate('google-openidconnect', { failureRedirect: '/fail' }),
-  function(req, res) {
+app.use('/google/callback'
+  , controlChecker.checkSessionParam
+  , csrfState.csrfStateCheck
+  , passport.authenticate('google-openidconnect', { failureRedirect: '/fail' })
+  , function(req, res) {
     res.redirect('/finish');
   }
 );
@@ -179,7 +193,10 @@ var googleRevoke = function(req, res, next) {
   });
 };
 
-app.use('/google/revoke', controlChecker.checkSessionParam, googleRevoke, function(req, res, next) {
+app.use('/google/revoke'
+  , controlChecker.checkSessionParam
+  , googleRevoke
+  , function(req, res) {
   if ( req.session.appuid )
   {
     if ( req.user )
