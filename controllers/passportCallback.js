@@ -51,7 +51,8 @@ var recover = function( req, profile, provider, accessToken, refreshToken, done 
     criteria: {}
     , select: 'uid ' + provider
   };
-  options.criteria[provider+'.id'] = user.id;
+  options.criteria[provider+'.id'] = profile.id;
+
   UserExtAccount.load(options, function(err, data) {
     if (err) { return done(err); }
     if (data)
@@ -60,7 +61,7 @@ var recover = function( req, profile, provider, accessToken, refreshToken, done 
       {
         req.session.appuid = profile.uid;
         data[provider] = {};
-        data[provider].id = user.id;
+        data[provider].id = profile.id;
         if ( accessToken ) { data[provider].accessToken = accessToken; }
         if ( refreshToken ) { data[provider].refreshToken = refreshToken; }
         UserExtAccount.linkExtAccount( req.session.appuid, provider, data[provider], function(err,numberAffected) {
@@ -75,6 +76,7 @@ var recover = function( req, profile, provider, accessToken, refreshToken, done 
     }
     else
     {
+      console.log('passportCallback.recover: doesn't found account. ' + provider + ' ' + profile.id);
       return done(null);
     }
   });
